@@ -3,7 +3,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
 <head>
     <meta charset="UTF-8">
-    <title>{{ product }}</title>
+    <title>Корзина</title>
 </head>
 <body class="bg bg-dark">
 <header class="p-3 text-bg-dark">
@@ -24,7 +24,7 @@
         {% if user.is_authenticated %}
         <div class="text-end">
           <button type="button" class="btn btn-outline-light me-2"><a href="/logout" class="text-white text-decoration-none">Выйти</a></button>
-          <button type="button" class="btn btn-warning"><a href="/cart" class="text-dark text-decoration-none">Корзина({{ cart }})</a></button>
+          <button type="button" class="btn btn-warning"><a href="/cart" class="text-dark text-decoration-none">Корзина({{ cart_l }})</a></button>
         </div>
           {% else %}
           <div class="text-end">
@@ -36,29 +36,21 @@
     </div>
     <hr class="text-white">
 </header>
-<div class="container col-xxl-8 px-4 py-5">
-    <div class="row flex-lg-row-reverse align-items-center g-5 py-5">
-      <div class="col-10 col-sm-8 col-lg-6">
-        <img src="{{ product.product_photo.url }}" class="d-block mx-lg-auto img-fluid" alt="Bootstrap Themes" width="700" height="500" loading="lazy">
-      </div>
-      <div class="col-lg-6">
-        <h1 class="display-5 fw-bold text-white lh-1 mb-3">{{ product }}</h1>
-        <p class="lead text-white">{{ product.product_des }}</p>
-        <div class="d-grid gap-2 d-md-flex justify-content-md-start">
-            {% if user.is_authenticated %}
-            <form action="/to-cart/{{ product.id }}" method="post">
-                {% csrf_token %}
-                <input type="number" min="1" value="1" placeholder="Количества товара" name="pr_count">
-                <button type="submit" class="btn btn-primary btn-lg px-4 me-md-2">Добавить в корзину</button>
-                <button type="button" class="btn btn-outline-secondary btn-lg px-4">${{ product.product_price }}</button>
-            </form>
-            {% else %}
-          <button type="button" class="btn btn-primary btn-lg px-4 me-md-2">Купить</button>
-          <button type="button" class="btn btn-outline-secondary btn-lg px-4">${{ product.product_price }}</button>
-            {% endif %}
-        </div>
-      </div>
-    </div>
-  </div>
+<div class="container">
+  {% for item in cart %}
+  <img src="{{ item.user_product.product_photo.url }}" width="350" height="350" alt="">
+  <br>
+  <h2 class="text-white">{{ item.user_product }}</h2>
+  <br>
+  <h2 class="text-white">Количество: {{ item.user_pr_count }}</h2>
+  <br>
+  <form action="/del-from-cart/{{ item.user_product.id }}" method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Удалить</button>
+  </form>
+  {% endfor %}
+  <br>
+  <h2 class="text-white">Итого: ${{ total }}</h2>
+</div>
 </body>
 </html>
