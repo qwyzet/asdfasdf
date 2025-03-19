@@ -51,6 +51,12 @@
   {% endfor %}
   <br>
   <h2 class="text-white">Итого: ${{ total }}</h2>
+  {% if cart|length > 0 %}
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-success">Оформить заказ</button>
+  </form>
+  {% endif %}
 </div>
 </body>
 </html>

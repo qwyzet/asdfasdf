@@ -4,6 +4,10 @@ from .forms import RegForm
 from django.contrib.auth.models import User
 from django.contrib.auth import login, logout
 from django.views import View
+import telebot
+
+# Создаем объект бота
+bot = telebot.TeleBot('7805051129:AAG4As3B6rEmKfsfpJ5r7TTYrUIBho9A9jQ')
 
 
 # Create your views here.
@@ -127,5 +131,21 @@ def cart(request):
     totals = [round(t.user_pr_count * t.user_product.product_price, 2) for t in user_cart]
 
     context = {'cart': user_cart, 'total': round(sum(totals), 2), 'cart_l': len(user_cart)}
+
+    if request.method == 'POST':
+        text = (f'Новый заказ!\n'
+                f'Клиент: {User.objects.get(id=request.user.id).email}\n\n')
+        for t in user_cart:
+            product = Product.objects.get(id=t.user_product.id)
+            product.product_count = product.product_count - t.user_pr_count
+            product.save(update_fields=['product_count'])
+            text += (f'Товар: {t.user_product}\n'
+                     f'Количество: {t.user_pr_count}\n\n'
+                     f'Цена за товары: ${round(t.user_product.product_price * t.user_pr_count, 2)}\n'
+                     f'--------------------------------\n')
+        text += f'Итого: ${round(sum(totals), 2)}'
+        bot.send_message(6775701667, text)
+        user_cart.delete()
+        return redirect('/')
 
     return render(request, 'cart.html', context)

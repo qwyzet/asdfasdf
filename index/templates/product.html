@@ -46,12 +46,16 @@
         <p class="lead text-white">{{ product.product_des }}</p>
         <div class="d-grid gap-2 d-md-flex justify-content-md-start">
             {% if user.is_authenticated %}
+            {% if product.product_count > 0 %}
             <form action="/to-cart/{{ product.id }}" method="post">
                 {% csrf_token %}
                 <input type="number" min="1" value="1" placeholder="Количества товара" name="pr_count">
                 <button type="submit" class="btn btn-primary btn-lg px-4 me-md-2">Добавить в корзину</button>
                 <button type="button" class="btn btn-outline-secondary btn-lg px-4">${{ product.product_price }}</button>
             </form>
+            {% else %}
+                <button class="btn btn-secondary">Нет в наличии</button>
+                {% endif %}
             {% else %}
           <button type="button" class="btn btn-primary btn-lg px-4 me-md-2">Купить</button>
           <button type="button" class="btn btn-outline-secondary btn-lg px-4">${{ product.product_price }}</button>
